@@ -8,9 +8,9 @@ Goals.......: Define the methods to be used in the dungeon game.
 Professor...: Jorge Ruiz (york)
 Student.....:
 ================================================================================================"""
-# Call external functions
-from posicion import *
 import os
+
+from posicion import print_at
 
 
 # Draw a frame on the console screen
@@ -37,42 +37,31 @@ def marco(col1, fil1, col2, fil2):
                 print_at(fl, cl, '╝')
 
 
-# Function to clean game area
-def limpiar():
-    for fl in range(6, 20):
-        for cl in range(2, 120):
-            print_at(fl, cl, ' ')
-
-
 # Function to create a graphic map
 def mapa():
     mapa = []
-    os.chdir(os.getcwd() + '/mapas')
     try:
-        # Open file whith only read mode
-        archivo = open('mapa_01.txt', mode='r', encoding='utf-8')
-
-        continua = True
-        while continua:
-            linea = archivo.readline()
-            fila = []
-            if linea != '':
-                for carac in linea:
-                    fila.append(carac)
-                mapa.append(fila)
-            else:
-                break
-
-        # Close file
-        archivo.close()
-    except:
-        print('Error al leer el archivo')
+        ruta_mapa = os.path.join(os.path.dirname(__file__), 'mapas', 'mapa_01.txt')
+        with open(ruta_mapa, mode='r', encoding='utf-8') as archivo:
+            mapa = [list(linea.rstrip('\r\n')) for linea in archivo]
+    except OSError as error:
+        print('Error al leer el archivo:', error)
 
     return mapa
 
 
 def valida(mapa, posX, posY):
-    if mapa[posY][posX] == ' ':
-        return True
-    else:
+    if posY < 0 or posY >= len(mapa):
         return False
+    if posX < 0 or posX >= len(mapa[posY]):
+        return False
+    return mapa[posY][posX] in (' ', '$', 'K', '^', '*')
+
+def enviarArduino(comando, puerto=None):
+    try:
+        if puerto is not None and puerto.is_open:
+            puerto.write(comando.encode('ascii'))
+            puerto.flush()
+    except (OSError, AttributeError):
+        return False
+    return True

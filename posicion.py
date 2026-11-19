@@ -8,9 +8,7 @@ Goals.......: Screen position manager, using the Windows kernel
 Professor...: Jorge Ruiz (york)
 Student.....:
 ================================================================================================"""
-# this library is used to position the cursor on the screen and this is possible, so you use Cython
-# version in the others words, you use C language to do it.
-from ctypes import *
+from ctypes import Structure, windll, c_short
 
 
 # Standard output device, this is the active console screen buffer
@@ -39,6 +37,3 @@ def print_at(r, c, s):
 
 
 # function to position cursor on screen
-def goto_xy(r, c):
-    h = windll.kernel32.GetStdHandle(STD_OUTPUT_HANDLE)
-    windll.kernel32.SetConsoleCursorPosition(h, COORD(c, r))
